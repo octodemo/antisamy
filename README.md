@@ -1,7 +1,7 @@
 antisamy
 ========
 
-A library for performing fast, configurable cleansing of HTML coming from untrusted sources.
+A library for performing fast, configurable cleansing of HTML coming from untrusted sources. Supports Java 7+.
 
 Another way of saying that could be: It's an API that helps you make sure that clients don't supply malicious cargo code in the HTML they supply for their profile, comments, etc., 
 that get persisted on the server. The term "malicious code" in regards to web applications usually mean "JavaScript." Mostly, Cascading Stylesheets are only considered malicious 

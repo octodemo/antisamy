@@ -39,8 +39,7 @@
         <connection>scm:git:git@github.com:nahsra/antisamy.git</connection>
         <url>scm:git:git@github.com:nahsra/antisamy.git</url>
         <developerConnection>scm:git:git@github.com:nahsra/antisamy.git</developerConnection>
-      <tag>antisamy-1.5.8</tag>
-  </scm>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,21 +47,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-css</artifactId>
-            <version>1.11</version>
-            <exclusions>
-                <!-- exclude this as batik-css 1.11 uses commons-logging 1.0.4 and we want to eliminate the convergence mismatch -->
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <!-- v1.12 requires Java 7. If you need Java 6 support, exclude this dependency and import v1.11 instead. -->
+            <version>1.12</version>
         </dependency>
          <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
@@ -76,10 +64,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-		    <version>4.5.8</version>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.8</version>
             <exclusions>
                 <!-- exclude this as httpclient 4.5.8 uses commons-codec 1.11 and we want to eliminate the convergence mismatch -->
                 <exclusion>
@@ -87,17 +75,39 @@
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
             </exclusions>
-		</dependency>
-		<dependency>
-		    <groupId>xerces</groupId>
-		    <artifactId>xercesImpl</artifactId>
-		    <version>2.12.0</version>
-		</dependency>
+        </dependency>
         <dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.12</version>
-		</dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-css</artifactId>
+            <version>1.11</version>
+            <exclusions>
+                <!-- exclude this as batik-css 1.11 uses commons-logging 1.0.4 and we want to eliminate the convergence mismatch -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis-ext</artifactId>
+            <version>1.3.04</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -106,20 +116,49 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>2.1</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
     <build>
-    	<pluginManagement>
-    	    <plugins>
+        <pluginManagement>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-antrun-plugin</artifactId>
+                  <version>1.8</version>
+               </plugin>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-assembly-plugin</artifactId>
+                  <version>3.1.1</version>
+               </plugin>
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-dependency-plugin</artifactId>
                   <version>3.1.1</version>
                </plugin>
-    	    </plugins>
-    	</pluginManagement>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.11</version>
+                <dependencies>
+                  <!-- force upgrade to newer spotbugs version. spotbugs-maven-plugin for this version not released. -->
+                  <dependency>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs</artifactId>
+                    <version>3.1.12</version>
+                  </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -139,19 +178,57 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.owasp.validator.html.AntiSamy</mainClass>
-                            <packageName>org.owasp.validator.html</packageName>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <classpathPrefix />
-                        </manifest>
-                    </archive>
-                </configuration>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <dependencies>
+                  <dependency>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>extra-enforcer-rules</artifactId>
+                    <version>1.2</version>
+                  </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                      <id>enforce-bytecode-version</id>
+                      <goals>
+                        <goal>enforce</goal>
+                      </goals>
+                      <configuration>
+                        <rules>
+                          <enforceBytecodeVersion>
+                            <maxJdkVersion>1.6</maxJdkVersion>
+                            <ignoredScopes><ignoreScope>test</ignoreScope></ignoredScopes>
+                            <excludes>
+                              <exclude>commons-codec:commons-codec</exclude>
+                            </excludes>
+                          </enforceBytecodeVersion>
+                        </rules>
+                        <fail>true</fail>
+                      </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-jdk-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>1.6</version>
+                                    <message>AntiSamy supports Java 6+</message>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -170,6 +247,21 @@
                 <version>2.5.2</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.owasp.validator.html.AntiSamy</mainClass>
+                            <packageName>org.owasp.validator.html</packageName>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <classpathPrefix />
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-javadoc-plugin</artifactId>
                <version>3.0.1</version>
@@ -180,6 +272,11 @@
                    <goals><goal>jar</goal></goals>
                  </execution>
                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -203,35 +300,13 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
             </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>3.1.11</version>
-                <dependencies>
-                  <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
-                  <dependency>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs</artifactId>
-                    <version>3.1.12</version>
-                  </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
     <reporting>
         <plugins>
            <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>versions-maven-plugin</artifactId>
-               <version>2.5</version>
-               <reportSets>
-                 <reportSet>
-                   <reports>
-                     <report>dependency-updates-report</report>
-                     <report>plugin-updates-report</report>
-                   </reports>
-                 </reportSet>
-               </reportSets>
+               <groupId>com.github.spotbugs</groupId>
+               <artifactId>spotbugs-maven-plugin</artifactId>
            </plugin>
            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
@@ -249,8 +324,17 @@
                </configuration>
            </plugin>
            <plugin>
-               <groupId>com.github.spotbugs</groupId>
-               <artifactId>spotbugs-maven-plugin</artifactId>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>versions-maven-plugin</artifactId>
+               <version>2.5</version>
+               <reportSets>
+                 <reportSet>
+                   <reports>
+                     <report>dependency-updates-report</report>
+                     <report>plugin-updates-report</report>
+                   </reports>
+                 </reportSet>
+               </reportSets>
            </plugin>
         </plugins>
     </reporting>
