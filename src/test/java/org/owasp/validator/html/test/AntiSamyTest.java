@@ -1396,4 +1396,31 @@ static final String test33 = "<html>\n"
         assertEquals("", as.scan(test34b, policy, AntiSamy.SAX).getCleanHTML());
     }
 */
+    
+    @Test
+    public void testInvalidComments() throws ScanException, PolicyException {
+
+    	// Test for Invalid comments being retained, as reported by Vivek Krishna
+    	
+        String testValidComments1 = "<div><!-- These comments should be retained --></div>\n";
+
+        // All 3 of these are invalid comments, so should be stripped out, even though PRESERVE_COMMENTS on the policy is set to true.
+        String testInvalidComments1 = "<div><!--><style onload=alert()></style>--></div>\n";
+        String testInvalidComments2 = "<div><!---><style onload=alert()></style>--></div>\n";
+        String testInvalidComments3 = "<div><!----!><style onload=alert()></style> --></div>";
+        
+        assertThat(as.scan(testValidComments1, policy.cloneWithDirective(Policy.PRESERVE_COMMENTS, "true"), AntiSamy.SAX).getCleanHTML(),
+        		containsString("<!-- These comments "));
+
+        assertThat(as.scan(testInvalidComments1, policy.cloneWithDirective(Policy.PRESERVE_COMMENTS, "true"), AntiSamy.SAX).getCleanHTML(),
+        		not(containsString("onload=alert")));
+        assertThat(as.scan(testInvalidComments2, policy.cloneWithDirective(Policy.PRESERVE_COMMENTS, "true"), AntiSamy.SAX).getCleanHTML(),
+        		not(containsString("onload=alert")));
+        assertThat(as.scan(testInvalidComments3, policy.cloneWithDirective(Policy.PRESERVE_COMMENTS, "true"), AntiSamy.SAX).getCleanHTML(),
+        		not(containsString("onload=alert")));
+        
+//        assertEquals("<div>Hello</div>", as.scan(testInvalidComments1, policy.cloneWithDirective(Policy.PRESERVE_COMMENTS, "true"), 
+//        		AntiSamy.SAX).getCleanHTML());
+//        assertEquals("<div>Hello</div>", as.scan(testInvalidComments1, policy, AntiSamy.DOM).getCleanHTML());
+    }
 }
