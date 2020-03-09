@@ -1397,11 +1397,12 @@ static final String test33 = "<html>\n"
     }
 */
     
-    @Test
+    @Test // Comment out to verify all other tests pass as this test case currently fails.
     public void testInvalidComments() throws ScanException, PolicyException {
 
-    	// Test for Invalid comments being retained, as reported by Vivek Krishna
-    	
+        // Test for Invalid comments being retained, as privately reported by Vivek Krishna
+        // See email thread in my owasp gmail account (dwichers)
+
         String testValidComments1 = "<div><!-- These comments should be retained --></div>\n";
 
         // All 3 of these are invalid comments, so should be stripped out, even though PRESERVE_COMMENTS on the policy is set to true.
